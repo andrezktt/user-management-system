@@ -7,29 +7,30 @@ public class TestUserService {
     public static void main(String[] args) {
         UserService userService = new UserService();
 
-        userService.loadFromFile();
+        userService.deleteAll();
 
-//        System.out.println("Adicionando usuários: ");
-//        userService.addUser(new User(1, "Alice", "alice@gmail.com", "password123"));
-//        userService.addUser(new User(2, "Robert", "bob@gmail.com", "bob1987"));
-//        userService.addUser(new User(3, "Alex", "alex@gmail.com", "securePassword"));
+        System.out.println("Adicionando usuários: ");
+        userService.addUser(new User(1, "Billy Woods", "b.woodsw@gmail.com", "billy123"));
+        userService.addUser(new User(2, "Freddie Gibs", "fred.gibs@gmail.com", "freddie123"));
+//        userService.addUser(new User(3, "J Cole", "jcole@gmail.com", "securePassword"));
+//        userService.addUser(new User(4, "Drake", "drake@gmail.com", "heyDrake"));
 
         System.out.println("\nListando todos os usuários: ");
         userService.listUsers();
 
         System.out.println("\nAtualizando um usuário: ");
-        userService.updateUser(2, "Denzel", "denzel@outlook.com", "123password");
+        userService.updateUser(3, "Danny Brown", "danny.b@outlook.com", "danny123");
 
         System.out.println("\nListando todos os usuários após atualização: ");
         userService.listUsers();
 
         System.out.println("\nDeletando um usuário: ");
-        userService.deleteUser(3);
+        userService.deleteUser(2);
 
         System.out.println("\nListando todos os usuários após deleção: ");
         userService.listUsers();
 
         System.out.println("\nDeletando um usuário inexistente: ");
-        userService.deleteUser(5);
+        userService.deleteUser(25);
     }
 }

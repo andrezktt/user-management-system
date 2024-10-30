@@ -1,84 +1,100 @@
 package usermanagement;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.*;
 
 public class UserService {
-    private List<User> users = new ArrayList<>();
-    private final String filePath = "users.txt";
+    private Connection connection;
 
+    // Construtor que estabelece a conexão com o banco de dados
+    public UserService() {
+        // Estabelece a conexão
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_management", "root", "Password@123");
+        } catch (SQLException e) {
+            System.out.println("Erro ao conectar-se ao banco de dados: " + e.getMessage());
+        }
+    }
+
+    // Metodo para adicionar um novo usuario
     public void addUser(User user) {
-        users.add(user);
-        System.out.println("Usuário adicionado: " + user);
-        saveToFile();
+        String sql = "INSERT INTO users (name, email, password) VALUES (?, ? , ?)";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+            statement.executeUpdate();
+            System.out.println("Usuário adicionado: " + user);
+        } catch (SQLException e) {
+            System.out.println("Erro ao adicionar usuário: " + e.getMessage());
+        }
     }
 
+    // Metodo para listar todos os usuarios
     public void listUsers() {
-        if (users.isEmpty()) {
-            System.out.println("Nenhum usuário foi cadastrado.");
-        } else {
-            for (User user : users) {
-                System.out.println(user);
+        String sql = "SELECT * FROM users";
+        try (Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+
+            System.out.println("Lista de usuários:");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("id");
+                String name = resultSet.getString("name");
+                String email = resultSet.getString("email");
+                System.out.println(new User(id, name, email, "******"));
             }
+        } catch (SQLException e) {
+            System.out.println("Erro ao listar usuários: " + e.getMessage());
         }
     }
 
-    public void updateUser(int id, String newName, String newEmail, String newPassword) {
-        for (User user : users) {
-            if (user.getId() == id) {
-                user.setName(newName);
-                user.setEmail(newEmail);
-                user.setPassword(newPassword);
-                System.out.println("Usuário atualizado: " + user);
-                saveToFile();
-                return;
+    public void deleteAll() {
+        String sql = "DELETE FROM users";
+        try (Statement statement = connection.createStatement()) {
+            int rowsAffected = statement.executeUpdate(sql);
+
+            if (rowsAffected > 0) {
+                System.out.println("Todos os usuários foram removidos com sucesso.");
+            } else {
+                System.out.println("Nenhum usuário para remover.");
             }
+        } catch (SQLException e) {
+            System.out.println("Erro ao excluir todos os usuários: " + e.getMessage());
         }
-        System.out.println("Usuário com ID: " + id + " não encontrado.");
+    }
+
+    // Metodo para atualizar um usuário existente pelo ID
+    public void updateUser(int id, String newName, String newEmail, String newPassword) {
+        String sql = "UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, newName);
+            statement.setString(2, newEmail);
+            statement.setString(3, newPassword);
+            statement.setInt(4, id);
+            int rowsAffected = statement.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("Usuário atualizado com sucesso.");
+            } else {
+                System.out.println("Usuário com ID " + id + " não encontrado.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro ao atualizar usuário: " + e.getMessage());
+        }
     }
 
     public void deleteUser(int id) {
-        for (User user : users) {
-            if (user.getId() == id) {
-                users.remove(user);
-                System.out.println("Usuário removido: " + user);
-                saveToFile();
-                return;
-            }
-        }
-        System.out.println("Usuário com ID: " + id + " não encontrado.");
-    }
+        String sql = "DELETE FROM users WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            int rowsAffected = statement.executeUpdate();
 
-    public void saveToFile() {
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
-            for (User user : users) {
-                writer.write(user.getId() + "," + user.getName() + "," + user.getEmail() + "," + user.getPassword());
-                writer.newLine();
+            if (rowsAffected > 0) {
+                System.out.println("Usuário removido com sucesso.");
+            } else {
+                System.out.println("Usuário com ID " + id + " não encontrado.");
             }
-            System.out.println("Dados salvos com sucesso.");
-        } catch (IOException e) {
-            System.out.println("Erro ao salvar os dados: " + e.getMessage());
-        }
-    }
-
-    public void loadFromFile() {
-        users.clear();
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] data = line.split(",");
-                if (data.length == 4) {
-                    int id = Integer.parseInt(data[0]);
-                    String name = data[1];
-                    String email = data[2];
-                    String password = data[3];
-                    users.add(new User(id, name, email, password));
-                }
-            }
-            System.out.println("Dados carregados com sucesso.");
-        } catch (IOException e) {
-            System.out.println("Erro ao salvar os dados: " + e.getMessage());
+        } catch (SQLException e) {
+            System.out.println("Erro ao excluir usuário: " + e.getMessage());
         }
     }
 }

@@ -1,4 +1,0 @@
-1,Alice,alice@gmail.com,password123
-2,Denzel,denzel@outlook.com,123password
-1,Alice,alice@gmail.com,password123
-2,Robert,bob@gmail.com,bob1987
