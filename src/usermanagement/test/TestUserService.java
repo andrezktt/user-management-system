@@ -3,14 +3,16 @@ package usermanagement.test;
 import usermanagement.User;
 import usermanagement.UserService;
 
-public class UserServiceTest {
+public class TestUserService {
     public static void main(String[] args) {
         UserService userService = new UserService();
 
-        System.out.println("Adicionando usuários: ");
-        userService.addUser(new User(1, "Alice", "alice@gmail.com", "password123"));
-        userService.addUser(new User(2, "Robert", "bob@gmail.com", "bob1987"));
-        userService.addUser(new User(3, "Alex", "alex@gmail.com", "securePassword"));
+        userService.loadFromFile();
+
+//        System.out.println("Adicionando usuários: ");
+//        userService.addUser(new User(1, "Alice", "alice@gmail.com", "password123"));
+//        userService.addUser(new User(2, "Robert", "bob@gmail.com", "bob1987"));
+//        userService.addUser(new User(3, "Alex", "alex@gmail.com", "securePassword"));
 
         System.out.println("\nListando todos os usuários: ");
         userService.listUsers();
