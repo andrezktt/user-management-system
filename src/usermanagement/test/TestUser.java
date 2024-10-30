@@ -1,4 +1,6 @@
-package usermanagement;
+package usermanagement.test;
+
+import usermanagement.User;
 
 public class TestUser {
     public static void main(String[] args) {
