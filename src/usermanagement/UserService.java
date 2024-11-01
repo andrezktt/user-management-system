@@ -3,6 +3,8 @@ package usermanagement;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserService {
     private Connection connection;
@@ -20,33 +22,42 @@ public class UserService {
     // Metodo para adicionar um novo usuario
     public void addUser(User user) {
         String sql = "INSERT INTO users (name, email, password) VALUES (?, ? , ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
             statement.setString(3, hashPassword(user.getPassword()));
-            statement.executeUpdate();
-            System.out.println("Usuário adicionado: " + user.getName());
+
+            int affectedRows = statement.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        int generateId = generatedKeys.getInt(1);
+                        System.out.println("Usuário adicionado com sucesso! ID: " + generateId);
+                    }
+                }
+            }
         } catch (SQLException e) {
             System.out.println("Erro ao adicionar usuário: " + e.getMessage());
         }
     }
 
-    // Metodo para listar todos os usuarios
-    public void listUsers() {
+    // Metodo para retornar todos os usuarios
+    public List<User> getAllUsers() {
+        List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
-        try (Statement statement = connection.createStatement();
-             ResultSet resultSet = statement.executeQuery(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            ResultSet resultSet = statement.executeQuery();
 
-            System.out.println("Lista de usuários:");
             while (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("name");
                 String email = resultSet.getString("email");
-                System.out.println(new User(id, name, email, "******"));
+                users.add(new User(id, name, email));
             }
         } catch (SQLException e) {
-            System.out.println("Erro ao listar usuários: " + e.getMessage());
+            System.out.println("Erro ao recuperar usuários: " + e.getMessage());
         }
+        return users;
     }
 
     public void deleteAll() {
@@ -75,6 +86,18 @@ public class UserService {
             System.out.println("Usuário atualizado: " + user.getName());
         } catch (SQLException e) {
             System.out.println("Erro ao atualizar usuário: " + e.getMessage());
+        }
+    }
+
+    public void updatePassword(int userId, String newPassword) {
+        String sql = "UPDATE users SET password = ? WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, hashPassword(newPassword));
+            statement.setInt(2, userId);
+            statement.executeUpdate();
+            System.out.println("Senha atualizada para o usuário ID: " + userId);
+        } catch (SQLException e) {
+            System.out.println("Erro ao atualizar senha: " + e.getMessage());
         }
     }
 
