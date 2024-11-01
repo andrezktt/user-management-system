@@ -65,36 +65,25 @@ public class UserService {
     }
 
     // Metodo para atualizar um usuário existente pelo ID
-    public void updateUser(int id, String newName, String newEmail, String newPassword) {
-        String sql = "UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?";
+    public void updateUser(User user) {
+        String sql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, newName);
-            statement.setString(2, newEmail);
-            statement.setString(3, newPassword);
-            statement.setInt(4, id);
-            int rowsAffected = statement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Usuário atualizado com sucesso.");
-            } else {
-                System.out.println("Usuário com ID " + id + " não encontrado.");
-            }
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setInt(3, user.getId());
+            statement.executeUpdate();
+            System.out.println("Usuário atualizado: " + user.getName());
         } catch (SQLException e) {
             System.out.println("Erro ao atualizar usuário: " + e.getMessage());
         }
     }
 
-    public void deleteUser(int id) {
+    public void deleteUser(int userId) {
         String sql = "DELETE FROM users WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, id);
-            int rowsAffected = statement.executeUpdate();
-
-            if (rowsAffected > 0) {
-                System.out.println("Usuário removido com sucesso.");
-            } else {
-                System.out.println("Usuário com ID " + id + " não encontrado.");
-            }
+            statement.setInt(1, userId);
+            statement.executeUpdate();
+            System.out.println("Usuário excluído com ID: " + userId);
         } catch (SQLException e) {
             System.out.println("Erro ao excluir usuário: " + e.getMessage());
         }
