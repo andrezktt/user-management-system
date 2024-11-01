@@ -3,34 +3,43 @@ package usermanagement.test;
 import usermanagement.User;
 import usermanagement.UserService;
 
+import java.util.Scanner;
+
 public class TestUserService {
     public static void main(String[] args) {
         UserService userService = new UserService();
 
-        userService.deleteAll();
+        Scanner scan = new Scanner(System.in);
 
-        System.out.println("Adicionando usuários: ");
-        userService.addUser(new User(1, "Billy Woods", "b.woodsw@gmail.com", "billy123"));
-        userService.addUser(new User(2, "Freddie Gibs", "fred.gibs@gmail.com", "freddie123"));
-//        userService.addUser(new User(3, "J Cole", "jcole@gmail.com", "securePassword"));
-//        userService.addUser(new User(4, "Drake", "drake@gmail.com", "heyDrake"));
+        System.out.println("Selecione uma opção:");
+        System.out.println("1 - Registrar usuário");
+        System.out.println("2 - Fazer login");
+        int option = scan.nextInt();
+        scan.nextLine();
 
-        System.out.println("\nListando todos os usuários: ");
-        userService.listUsers();
+        switch (option) {
+            case 1:
+                System.out.print("Nome: ");
+                String name = scan.nextLine();
+                System.out.print("Email: ");
+                String email = scan.nextLine();
+                System.out.print("Senha: ");
+                String password = scan.nextLine();
+                userService.addUser(new User(0, name, email, password));
+                break;
+            case 2:
+                System.out.print("Email: ");
+                String loginEmail = scan.nextLine();
+                System.out.print("Senha: ");
+                String loginPassword = scan.nextLine();
+                boolean loggedIn = userService.login(loginEmail, loginPassword);
+                System.out.println(loggedIn ? "Login bem-sucedido!" : "Falha ao executar login.");
+                break;
+            default:
+                System.out.print("Opção inválida.");
+                break;
+        }
 
-        System.out.println("\nAtualizando um usuário: ");
-        userService.updateUser(3, "Danny Brown", "danny.b@outlook.com", "danny123");
-
-        System.out.println("\nListando todos os usuários após atualização: ");
-        userService.listUsers();
-
-        System.out.println("\nDeletando um usuário: ");
-        userService.deleteUser(2);
-
-        System.out.println("\nListando todos os usuários após deleção: ");
-        userService.listUsers();
-
-        System.out.println("\nDeletando um usuário inexistente: ");
-        userService.deleteUser(25);
+        scan.close();
     }
 }

@@ -1,5 +1,7 @@
 package usermanagement;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 
 public class UserService {
@@ -21,9 +23,9 @@ public class UserService {
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, user.getName());
             statement.setString(2, user.getEmail());
-            statement.setString(3, user.getPassword());
+            statement.setString(3, hashPassword(user.getPassword()));
             statement.executeUpdate();
-            System.out.println("Usuário adicionado: " + user);
+            System.out.println("Usuário adicionado: " + user.getName());
         } catch (SQLException e) {
             System.out.println("Erro ao adicionar usuário: " + e.getMessage());
         }
@@ -96,5 +98,37 @@ public class UserService {
         } catch (SQLException e) {
             System.out.println("Erro ao excluir usuário: " + e.getMessage());
         }
+    }
+
+    private String hashPassword(String password) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes());
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                hexString.append(String.format("%02x", b));
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Erro ao criptografar a senha: " + e.getMessage());
+        }
+    }
+
+    public boolean login(String email, String password) {
+        String sql = "SELECT password FROM users WHERE email = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, email);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                String storedPassword = resultSet.getString("password");
+                return storedPassword.equals(hashPassword(password));
+            } else {
+                System.out.println("Usuário não encontrado.");
+            }
+        } catch (SQLException e ) {
+            System.out.println("Erro ao fazer login: " + e.getMessage());
+        }
+        return false;
     }
 }
