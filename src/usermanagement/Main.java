@@ -7,8 +7,6 @@ public class Main {
     private static final UserService userService = new UserService();
 
     public static void main(String[] args) {
-        userService.deleteAll();
-
         int option;
         do {
             System.out.println("\n---- Menu de Gerenciamento de Usuários ----");
@@ -17,6 +15,7 @@ public class Main {
             System.out.println("3. Alterar senha do usuário");
             System.out.println("4. Excluir usuário");
             System.out.println("5. Visualizar todos os usuários");
+            System.out.println("6. Autenticação de usuário");
             System.out.println("0. Sair");
             System.out.print("\nEscolha uma opção: ");
             option = scanner.nextInt();
@@ -37,6 +36,9 @@ public class Main {
                     break;
                 case 5:
                     viewUsers();
+                    break;
+                case 6:
+                    login();
                     break;
                 case 0:
                     System.out.println("Encerrando o programa...");
@@ -92,6 +94,20 @@ public class Main {
 
     private static void viewUsers() {
         userService.getAllUsers().forEach(System.out::println);
+    }
+
+    private static void login() {
+        System.out.print("\nEmail: ");
+        String email = scanner.nextLine();
+        System.out.print("Senha: ");
+        String password = scanner.nextLine();
+
+        User user = userService.authenticateUser(email, password);
+        if (user != null) {
+            System.out.println("Bem-vindo(a), " + user.getName() + "!");
+        } else {
+            System.out.println("Email ou senha incorretos.");
+        }
     }
 
 }

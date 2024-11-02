@@ -143,4 +143,24 @@ public class UserService {
         }
         return false;
     }
+
+    public User authenticateUser(String email, String password) {
+        String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setString(1, email);
+            statement.setString(2, hashPassword(password));
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    int id = resultSet.getInt("id");
+                    String name = resultSet.getString("name");
+                    String userEmail = resultSet.getString("email");
+                    return new User(id, name, userEmail);
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Erro na autenticação: " + e.getMessage());
+        }
+        return null;
+    }
 }
