@@ -5,17 +5,19 @@ import java.util.Scanner;
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final UserService userService = new UserService();
+    private static User loggedInUser = null;
 
     public static void main(String[] args) {
         int option;
         do {
             System.out.println("\n---- Menu de Gerenciamento de Usuários ----");
-            System.out.println("1. Adicionar novo usuário");
-            System.out.println("2. Atualizar informações do usuário");
-            System.out.println("3. Alterar senha do usuário");
+            System.out.println("1. Adicionar usuário");
+            System.out.println("2. Atualizar usuário");
+            System.out.println("3. Alterar senha");
             System.out.println("4. Excluir usuário");
-            System.out.println("5. Visualizar todos os usuários");
-            System.out.println("6. Autenticação de usuário");
+            System.out.println("5. Lista de usuários");
+            System.out.println("6. Login");
+            System.out.println("7. Logout");
             System.out.println("0. Sair");
             System.out.print("\nEscolha uma opção: ");
             option = scanner.nextInt();
@@ -40,6 +42,9 @@ public class Main {
                 case 6:
                     login();
                     break;
+                case 7:
+                    logout();
+                    break;
                 case 0:
                     System.out.println("Encerrando o programa...");
                     break;
@@ -50,6 +55,11 @@ public class Main {
     }
 
     private static void addUser() {
+        if (loggedInUser == null) {
+            System.out.println("Por favor, faça login para adicionar usuários.");
+            return;
+        }
+
         System.out.print("\nNome do usuário: ");
         String name = scanner.nextLine();
         System.out.print("Email do usuário: ");
@@ -62,6 +72,11 @@ public class Main {
     }
 
     private static void updateUser() {
+        if (loggedInUser == null) {
+            System.out.println("Por favor, faça login para atualizar usuários.");
+            return;
+        }
+
         System.out.print("\nID do usuário a ser atualizado: ");
         int userId = scanner.nextInt();
         scanner.nextLine();
@@ -85,6 +100,11 @@ public class Main {
     }
 
     private static void deleteUser() {
+        if (loggedInUser == null) {
+            System.out.println("Por favor, faça login para deletar usuários.");
+            return;
+        }
+
         System.out.print("\nID do usuário a ser excluído: ");
         int userId = scanner.nextInt();
         scanner.nextLine();
@@ -104,10 +124,19 @@ public class Main {
 
         User user = userService.authenticateUser(email, password);
         if (user != null) {
+            loggedInUser =user;
             System.out.println("Bem-vindo(a), " + user.getName() + "!");
         } else {
             System.out.println("Email ou senha incorretos.");
         }
     }
 
+    private static void logout() {
+        if (loggedInUser != null) {
+            System.out.println("Logout realizado com sucesso, até mais, " + loggedInUser.getName() + "!");
+            loggedInUser = null;
+        } else {
+            System.out.println("Nenhum usuário está logado no momento.");
+        }
+    }
 }
