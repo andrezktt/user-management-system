@@ -2,11 +2,21 @@ package usermanagement;
 
 import java.util.Scanner;
 
+/**
+ * Classe principal para gerenciar usuários em um sistema de gerenciamento de usuários.
+ * Esta classe fornece um menu de opções para adicionar, atualizar, excluir e visualizar usuários,
+ * além de funcionalidades de login e logout.
+ */
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
     private static final UserService userService = new UserService();
     private static User loggedInUser = null;
 
+    /**
+     * Metodo principal que inicia a aplicação e exibe o menu para o usuário.
+     *
+     * @param args Argumentos de linha de comando (não utilizados).
+     */
     public static void main(String[] args) {
         int option;
         do {
@@ -45,6 +55,9 @@ public class Main {
         } while (option != 0);
     }
 
+    /**
+     * Exibe o menu de opções para o gerenciamento de usuários.
+     */
     private static void displayMenu() {
         System.out.println("\n---- Menu de Gerenciamento de Usuários ----");
         System.out.println("1. Adicionar usuário");
@@ -58,6 +71,11 @@ public class Main {
         System.out.print("\nEscolha uma opção: ");
     }
 
+    /**
+     * Verifica se um usuário está logado.
+     *
+     * @return true se um usuário estiver logado; caso contrário, false.
+     */
     private static boolean checkLoggedIn() {
         if (loggedInUser == null) {
             System.out.println("Por favor, faça login para realizar esta operação.");
@@ -66,6 +84,9 @@ public class Main {
         return true;
     }
 
+    /**
+     * Adiciona um novo usuário ao sistema.
+     */
     private static void addUser() {
         if (!checkLoggedIn()) return;
 
@@ -80,6 +101,9 @@ public class Main {
         userService.addUser(user);
     }
 
+    /**
+     * Atualiza as informações de um usuário existente.
+     */
     private static void updateUser() {
         if (!checkLoggedIn()) return;
 
@@ -101,6 +125,9 @@ public class Main {
         userService.updateUser(user);
     }
 
+    /**
+     * Atualiza a senha de um usuário existente.
+     */
     private static void updatePassword() {
         if (!checkLoggedIn()) return;
 
@@ -119,6 +146,9 @@ public class Main {
         userService.updatePassword(userId, newPassword);
     }
 
+    /**
+     * Exclui um usuário do sistema.
+     */
     private static void deleteUser() {
         if (!checkLoggedIn()) return;
 
@@ -134,10 +164,16 @@ public class Main {
         userService.deleteUser(userId);
     }
 
+    /**
+     * Exibe a lista de todos os usuários registrados no sistema.
+     */
     private static void viewUsers() {
         userService.getAllUsers().forEach(System.out::println);
     }
 
+    /**
+     * Realiza o login de um usuário.
+     */
     private static void login() {
         System.out.print("\nEmail: ");
         String email = scanner.nextLine();
@@ -153,6 +189,9 @@ public class Main {
         }
     }
 
+    /**
+     * Realiza o logout do usuário atualmente logado.
+     */
     private static void logout() {
         if (loggedInUser != null) {
             System.out.println("Logout realizado com sucesso, até mais, " + loggedInUser.getName() + "!");

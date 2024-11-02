@@ -6,9 +6,16 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe responsável por gerenciar operações relacionadas a usuários,
+ * incluindo adição, atualização, exclusão e autenticação.
+ */
 public class UserService {
     private Connection connection;
 
+    /**
+     * Construtor que inicializa a conexão com o banco de dados.
+     */
     public UserService() {
         try {
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_management", "root", "Password@123");
@@ -17,6 +24,11 @@ public class UserService {
         }
     }
 
+    /**
+     * Adiciona um novo usuário ao banco de dados.
+     *
+     * @param user O usuário a ser adicionado.
+     */
     public void addUser(User user) {
         String sql = "INSERT INTO users (name, email, password) VALUES (?, ? , ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -38,6 +50,11 @@ public class UserService {
         }
     }
 
+    /**
+     * Recupera todos os usuários do banco de dados.
+     *
+     * @return Uma lista de usuários.
+     */
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
@@ -56,6 +73,9 @@ public class UserService {
         return users;
     }
 
+    /**
+     * Exclui todos os usuários do banco de dados.
+     */
     public void deleteAll() {
         String sql = "DELETE FROM users";
         try (Statement statement = connection.createStatement()) {
@@ -71,6 +91,11 @@ public class UserService {
         }
     }
 
+    /**
+     * Atualiza as informações de um usuário no banco de dados.
+     *
+     * @param user O usuário a ser atualizado.
+     */
     public void updateUser(User user) {
         String sql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -84,6 +109,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Atualiza a senha de um usuário no banco de dados.
+     *
+     * @param userId O ID do usuário cuja senha será atualizada.
+     * @param newPassword A nova senha.
+     */
     public void updatePassword(int userId, String newPassword) {
         String sql = "UPDATE users SET password = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -96,6 +127,11 @@ public class UserService {
         }
     }
 
+    /**
+     * Exclui um usuário do banco de dados.
+     *
+     * @param userId O ID do usuário a ser excluído.
+     */
     public void deleteUser(int userId) {
         String sql = "DELETE FROM users WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -107,6 +143,12 @@ public class UserService {
         }
     }
 
+    /**
+     * Criptografa a senha usando o algoritmo SHA-256.
+     *
+     * @param password A senha a ser criptografada.
+     * @return A senha criptografada em formato hexadecimal.
+     */
     private String hashPassword(String password) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
@@ -121,6 +163,13 @@ public class UserService {
         }
     }
 
+    /**
+     * Faz login de um usuário verificando se o e-mail e a senha estão corretos.
+     *
+     * @param email O e-mail do usuário.
+     * @param password A senha do usuário.
+     * @return true se o login for bem-sucedido, caso contrário, false.
+     */
     public boolean login(String email, String password) {
         String sql = "SELECT password FROM users WHERE email = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -139,6 +188,13 @@ public class UserService {
         return false;
     }
 
+    /**
+     * Autentica um usuário verificando se o e-mail e a senha estão corretos.
+     *
+     * @param email O e-mail do usuário.
+     * @param password A senha do usuário.
+     * @return Um objeto User se a autenticação for bem-sucedida, caso contrário, null.
+     */
     public User authenticateUser(String email, String password) {
         String sql = "SELECT * FROM users WHERE email = ? AND password = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -159,6 +215,12 @@ public class UserService {
         return null;
     }
 
+    /**
+     * Verifica se um usuário existe com base no ID fornecido.
+     *
+     * @param userId O ID do usuário a ser verificado.
+     * @return true se o usuário existir, caso contrário, false.
+     */
     public boolean userExists(int userId) {
         String sql = "SELECT id FROM users WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)){
