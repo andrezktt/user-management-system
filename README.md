@@ -18,15 +18,13 @@ Um sistema simples para gerenciamento de usuários, permitindo adicionar, atuali
     - Crie um banco de dados MySQL chamado `user_management`:
       ```sql
       CREATE DATABASE user_management;
-      ```
-      ```sql
+      
       CREATE TABLE users (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(100),
       email VARCHAR(100),
       password VARCHAR(100)
-    );
-      ```
+      );
 
 3. **Clone o Repositório**:
     - Execute o seguinte comando para clonar o repositório:
