@@ -10,16 +10,7 @@ public class Main {
     public static void main(String[] args) {
         int option;
         do {
-            System.out.println("\n---- Menu de Gerenciamento de Usuários ----");
-            System.out.println("1. Adicionar usuário");
-            System.out.println("2. Atualizar usuário");
-            System.out.println("3. Alterar senha");
-            System.out.println("4. Excluir usuário");
-            System.out.println("5. Lista de usuários");
-            System.out.println("6. Login");
-            System.out.println("7. Logout");
-            System.out.println("0. Sair");
-            System.out.print("\nEscolha uma opção: ");
+            displayMenu();
             option = scanner.nextInt();
             scanner.nextLine();
 
@@ -54,11 +45,29 @@ public class Main {
         } while (option != 0);
     }
 
-    private static void addUser() {
+    private static void displayMenu() {
+        System.out.println("\n---- Menu de Gerenciamento de Usuários ----");
+        System.out.println("1. Adicionar usuário");
+        System.out.println("2. Atualizar usuário");
+        System.out.println("3. Alterar senha");
+        System.out.println("4. Excluir usuário");
+        System.out.println("5. Lista de usuários");
+        System.out.println("6. Login");
+        System.out.println("7. Logout");
+        System.out.println("0. Sair");
+        System.out.print("\nEscolha uma opção: ");
+    }
+
+    private static boolean checkLoggedIn() {
         if (loggedInUser == null) {
-            System.out.println("Por favor, faça login para adicionar usuários.");
-            return;
+            System.out.println("Por favor, faça login para realizar esta operação.");
+            return false;
         }
+        return true;
+    }
+
+    private static void addUser() {
+        if (!checkLoggedIn()) return;
 
         System.out.print("\nNome do usuário: ");
         String name = scanner.nextLine();
@@ -72,14 +81,17 @@ public class Main {
     }
 
     private static void updateUser() {
-        if (loggedInUser == null) {
-            System.out.println("Por favor, faça login para atualizar usuários.");
-            return;
-        }
+        if (!checkLoggedIn()) return;
 
         System.out.print("\nID do usuário a ser atualizado: ");
         int userId = scanner.nextInt();
         scanner.nextLine();
+
+        if (!userService.userExists(userId)) {
+            System.out.println("Usuário não encontrado.");
+            return;
+        }
+
         System.out.print("Novo nome: ");
         String name = scanner.nextLine();
         System.out.print("Novo email: ");
@@ -90,9 +102,17 @@ public class Main {
     }
 
     private static void updatePassword() {
+        if (!checkLoggedIn()) return;
+
         System.out.print("\nID do usuário para alterar a senha: ");
         int userId = scanner.nextInt();
         scanner.nextLine();
+
+        if (!userService.userExists(userId)) {
+            System.out.println("Usuário não encontrado.");
+            return;
+        }
+
         System.out.print("Nova senha: ");
         String newPassword = scanner.nextLine();
 
@@ -100,14 +120,16 @@ public class Main {
     }
 
     private static void deleteUser() {
-        if (loggedInUser == null) {
-            System.out.println("Por favor, faça login para deletar usuários.");
-            return;
-        }
+        if (!checkLoggedIn()) return;
 
         System.out.print("\nID do usuário a ser excluído: ");
         int userId = scanner.nextInt();
         scanner.nextLine();
+
+        if (!userService.userExists(userId)) {
+            System.out.println("Usuário não encontrado.");
+            return;
+        }
 
         userService.deleteUser(userId);
     }

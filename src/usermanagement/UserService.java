@@ -9,9 +9,7 @@ import java.util.List;
 public class UserService {
     private Connection connection;
 
-    // Construtor que estabelece a conexão com o banco de dados
     public UserService() {
-        // Estabelece a conexão
         try {
             connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/user_management", "root", "Password@123");
         } catch (SQLException e) {
@@ -19,7 +17,6 @@ public class UserService {
         }
     }
 
-    // Metodo para adicionar um novo usuario
     public void addUser(User user) {
         String sql = "INSERT INTO users (name, email, password) VALUES (?, ? , ?)";
         try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -41,7 +38,6 @@ public class UserService {
         }
     }
 
-    // Metodo para retornar todos os usuarios
     public List<User> getAllUsers() {
         List<User> users = new ArrayList<>();
         String sql = "SELECT * FROM users";
@@ -75,7 +71,6 @@ public class UserService {
         }
     }
 
-    // Metodo para atualizar um usuário existente pelo ID
     public void updateUser(User user) {
         String sql = "UPDATE users SET name = ?, email = ? WHERE id = ?";
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -162,5 +157,17 @@ public class UserService {
             System.out.println("Erro na autenticação: " + e.getMessage());
         }
         return null;
+    }
+
+    public boolean userExists(int userId) {
+        String sql = "SELECT id FROM users WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)){
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            return resultSet.next();
+        } catch (SQLException e) {
+            System.out.println("Erro ao verificar usuário: " + e.getMessage());
+            return false;
+        }
     }
 }
