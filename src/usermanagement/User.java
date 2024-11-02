@@ -1,5 +1,8 @@
 package usermanagement;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class User {
     private int id;
     private String name;
@@ -49,7 +52,7 @@ public class User {
     }
 
     public void setEmail(String email) {
-        if (email.contains("@") && email.contains(".")) {
+        if (isValidEmail(email)) {
             this.email = email;
         } else {
             throw new IllegalArgumentException("E-mail inválido.");
@@ -61,11 +64,25 @@ public class User {
     }
 
     public void setPassword(String password) {
-        if (password.length() >= 6) {
+        if (isValidPassword(password)) {
             this.password = password;
         } else {
-            throw new IllegalArgumentException("A senha deve ter pelo menos 6 caracteres.");
+            throw new IllegalArgumentException("A senha deve ter pelo menos 6 caracteres, incluindo letras maiúsculas, números e caracteres especiais.");
         }
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+        Pattern pattern = Pattern.compile(emailRegex);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
+    }
+
+    private boolean isValidPassword(String password) {
+        String passwordRegex = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*[!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?])[A-Za-z\\d!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]{6,}$";
+        Pattern pattern = Pattern.compile(passwordRegex);
+        Matcher matcher = pattern.matcher(password);
+        return matcher.matches();
     }
 
     @Override
