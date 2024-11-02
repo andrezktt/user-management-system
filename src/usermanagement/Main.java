@@ -18,6 +18,8 @@ public class Main {
      * @param args Argumentos de linha de comando (não utilizados).
      */
     public static void main(String[] args) {
+        userService.deleteAll();
+        
         int option;
         do {
             displayMenu();
@@ -88,8 +90,6 @@ public class Main {
      * Adiciona um novo usuário ao sistema.
      */
     private static void addUser() {
-        if (!checkLoggedIn()) return;
-
         System.out.print("\nNome do usuário: ");
         String name = scanner.nextLine();
         System.out.print("Email do usuário: ");
